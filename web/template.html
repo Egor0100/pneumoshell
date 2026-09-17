@@ -1,0 +1,284 @@
+<title>Пневмооболочка под нагрузкой</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600&family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#f3f4f1; --panel:#ffffff; --ink:#1a2226; --ink2:#4d575b; --muted:#7c8589;
+  --line:#d8dcd8; --grid:#e6e9e5; --hull:#c9c6bd; --ground:#9aa19b;
+  --shell:#d4521b; --wall:#1f6f8b; --ref:#a9b0ab; --true:#1a2226; --contact:#b3261e;
+  --accent-soft:#fbe7dc; --focus:#1f6f8b;
+  --display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
+  --body:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#111617; --panel:#1a2123; --ink:#e4ebe8; --ink2:#b3bdb9; --muted:#87918e;
+    --line:#2f393b; --grid:#232c2e; --hull:#4a4a44; --ground:#6f7873;
+    --shell:#ff7a45; --wall:#5db4d3; --ref:#56605d; --true:#e4ebe8; --contact:#ff8a80;
+    --accent-soft:#3a2418; --focus:#5db4d3;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#111617; --panel:#1a2123; --ink:#e4ebe8; --ink2:#b3bdb9; --muted:#87918e;
+  --line:#2f393b; --grid:#232c2e; --hull:#4a4a44; --ground:#6f7873;
+  --shell:#ff7a45; --wall:#5db4d3; --ref:#56605d; --true:#e4ebe8; --contact:#ff8a80;
+  --accent-soft:#3a2418; --focus:#5db4d3;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5;margin:0}
+.wrap{max-width:1180px;margin:0 auto;padding-inline:20px;padding-block:28px 48px;display:grid;gap:22px}
+header{display:grid;gap:6px}
+.eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--display);font-weight:600;font-size:clamp(30px,4.2vw,44px);line-height:1.02;margin:0;letter-spacing:.005em;text-wrap:balance}
+.lede{color:var(--ink2);max-width:68ch;margin:0}
+.main{display:grid;grid-template-columns:minmax(260px,330px) 1fr;gap:20px;align-items:start}
+@media (max-width:820px){.main{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px}
+.controls{display:grid;gap:18px}
+.seg{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{font:500 14px var(--body);padding:8px 10px;border:0;background:transparent;color:var(--ink2);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.seg button:focus-visible,select:focus-visible,input:focus-visible,.btn:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.group{display:grid;gap:12px}
+.group h2{font-family:var(--display);font-weight:600;font-size:17px;letter-spacing:.02em;margin:0;color:var(--ink)}
+.field{display:grid;gap:4px}
+.field .row{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.field label{font-size:14px;color:var(--ink2)}
+.field output{font-family:var(--mono);font-size:13px;font-variant-numeric:tabular-nums;color:var(--ink)}
+input[type=range]{width:100%;accent-color:var(--shell);margin:0}
+.hint{font-size:12.5px;color:var(--muted);margin:0}
+select{width:100%;font:14px var(--body);padding:7px 8px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--ink)}
+.btn{font:500 14px var(--body);padding:8px 12px;border:1px solid var(--line);border-radius:8px;background:transparent;color:var(--ink);cursor:pointer}
+.stage{display:grid;gap:14px}
+.figure{position:relative;padding:10px}
+svg.plot{display:block;width:100%;height:auto;max-height:72vh}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:var(--ink2);padding-inline:6px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:22px;height:0;border-top:2.5px solid}
+.readout{display:flex;flex-wrap:wrap;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.cell{background:var(--panel);padding:12px 14px;display:grid;gap:2px;align-content:start;flex:1 1 170px}
+.cell .k{font-size:12.5px;color:var(--muted)}
+.cell .v{font-family:var(--mono);font-size:19px;font-variant-numeric:tabular-nums}
+.cell .v small{font-size:12px;color:var(--muted);margin-left:3px}
+.cell.cmp .v{color:var(--ink2)}
+.note{font-size:13px;color:var(--muted);margin:0}
+section.facts{display:grid;gap:12px}
+section.facts h2{font-family:var(--display);font-weight:600;font-size:22px;margin:0}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;font-size:14px;min-width:560px}
+th,td{padding:8px 12px;text-align:right;border-bottom:1px solid var(--grid);font-variant-numeric:tabular-nums}
+th:first-child,td:first-child{text-align:left}
+th{font-weight:600;color:var(--ink2);font-size:13px}
+td.num{font-family:var(--mono);font-size:13px}
+tr.best td{background:var(--accent-soft)}
+tr:last-child td{border-bottom:0}
+.badge{display:inline-block;font:500 11px var(--mono);letter-spacing:.04em;padding:2px 6px;border-radius:4px;background:var(--accent-soft);color:var(--shell);margin-left:6px;vertical-align:1px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Курсовая работа · суррогатная ML-модель · НИУ ВШЭ, 2026</div>
+    <h1>Форма замкнутой многоярусной пневмооболочки под обжатием и боковым давлением</h1>
+    <p class="lede">Поперечное сечение гибкого ограждения из двух или трёх шарнирно соединённых баллонов. Форму считает нейросеть (MLP), обученная на 4000 расчётах классического решателя: нерастяжимые мембраны, баланс натяжений в шарнирах, адиабата в ярусах, контакт с опорой. Прогноз выполняется прямо в браузере.</p>
+  </header>
+
+  <div class="main">
+    <aside class="panel controls" aria-label="Параметры нагружения">
+      <div class="group">
+        <h2>Конструкция</h2>
+        <div class="seg" role="group" aria-label="Число ярусов">
+          <button type="button" id="n2" aria-pressed="true">2 яруса</button>
+          <button type="button" id="n3" aria-pressed="false">3 яруса</button>
+        </div>
+      </div>
+      <div class="group" id="pgroup">
+        <h2>Давления зарядки</h2>
+      </div>
+      <div class="group">
+        <h2>Нагрузка</h2>
+        <div class="field">
+          <div class="row"><label for="pc">Боковое давление p<sub>c</sub></label><output id="pc_o"></output></div>
+          <input type="range" id="pc" min="500" max="2000" step="10" value="1000">
+        </div>
+        <div class="field">
+          <div class="row"><label for="dl">Обжатие δ</label><output id="dl_o"></output></div>
+          <input type="range" id="dl" min="-0.05" max="0.25" step="0.005" value="0.10">
+          <p class="hint">δ &gt; 0 — опора поднята выше нижней точки свободной формы, δ &lt; 0 — зазор.</p>
+        </div>
+      </div>
+      <div class="group">
+        <h2>Сверка с решателем</h2>
+        <select id="case" aria-label="Случай из тестовой выборки"></select>
+        <p class="hint">Случаи из тестовой выборки, не участвовавшие в обучении. Точная форма рисуется тонкой линией под прогнозом.</p>
+      </div>
+    </aside>
+
+    <div class="stage">
+      <div class="panel figure">
+        <svg class="plot" id="plot" viewBox="0 0 640 600" role="img" aria-label="Поперечное сечение оболочки"></svg>
+        <div class="legend" id="legend">
+          <span><i class="sw" style="border-color:var(--shell)"></i>стенки (прогноз MLP)</span>
+          <span><i class="sw" style="border-color:var(--wall)"></i>перегородки</span>
+          <span><i class="sw" style="border-color:var(--ref);border-top-style:dashed"></i>свободная форма</span>
+          <span id="lg_true" hidden><i class="sw" style="border-color:var(--true);border-top-width:1.2px"></i>решатель (эталон)</span>
+          <span><i class="sw" style="border-color:var(--contact);border-top-width:4px"></i>зона контакта</span>
+        </div>
+      </div>
+      <div class="readout" id="readout"></div>
+      <p class="note" id="timing"></p>
+    </div>
+  </div>
+
+  <section class="facts">
+    <h2>Точность моделей на тестовой выборке</h2>
+    <div class="tbl"><table id="mtable"></table></div>
+    <p class="note">СКО — среднеквадратичная ошибка положения материальных точек сечения, 600 тестовых случаев на каждую конструкцию. Время — прогноз одного случая в Python (scikit-learn); классический решатель тратит на случай {{SOLVER_MS}}.</p>
+  </section>
+</div>
+
+<script>
+const DATA = /*DATA*/null;
+const METRICS = /*METRICS*/null;
+
+function f32(b64){const s=atob(b64);const u=new Uint8Array(s.length);for(let i=0;i<s.length;i++)u[i]=s.charCodeAt(i);return new Float32Array(u.buffer);}
+const MODELS={};
+for(const [name,m] of Object.entries(DATA)){
+  MODELS[name]={...m,
+    W:m.weights.map(w=>({r:w.shape[0],c:w.shape[1],d:f32(w.data)})),
+    B:m.biases.map(f32), pcaMean:f32(m.pca_mean), pcaComp:f32(m.pca_components)};
+}
+function predict(m,x){
+  let h=x.map((v,i)=>(v-m.x_mean[i])/m.x_scale[i]);
+  const L=m.W.length;
+  for(let l=0;l<L;l++){
+    const W=m.W[l],b=m.B[l],out=new Float64Array(W.c);
+    for(let j=0;j<W.c;j++){let s=b[j];for(let i=0;i<W.r;i++)s+=h[i]*W.d[i*W.c+j];out[j]=s;}
+    if(l<L-1){for(let j=0;j<W.c;j++)out[j]=m.activation==="relu"?Math.max(0,out[j]):Math.tanh(out[j]);}
+    h=out;
+  }
+  const k=m.n_components,D=m.pcaMean.length,Y=new Float64Array(D);
+  for(let d=0;d<D;d++)Y[d]=m.pcaMean[d];
+  for(let c=0;c<k;c++){const z=h[c]*m.c_scale;const off=c*D;for(let d=0;d<D;d++)Y[d]+=z*m.pcaComp[off+d];}
+  const q=[];for(let i=k;i<h.length;i++){const j=i-k;q.push(h[i]/m.w_pl*m.pl_scale[j]+m.pl_mean[j]);}
+  const P=q.slice(0,-1).map(v=>v*1000), Lc=Math.max(0,q[q.length-1]);
+  const pts=[];for(let i=0;i<D;i+=2)pts.push([Y[i],Y[i+1]]);
+  return {pts,P,L:Lc};
+}
+function ylow(m,p0){const p=p0.map(v=>v/1000);const f=[1,...p];for(let i=0;i<p.length;i++)for(let j=i;j<p.length;j++)f.push(p[i]*p[j]);return f.reduce((s,v,i)=>s+v*m.ylow_coef[i],0);}
+function split(m,pts){const out={};let k=0;for(const [nm,n] of m.layout){out[nm]=pts.slice(k,k+n);k+=n;}return out;}
+
+// ---- рисование ----
+const svg=document.getElementById('plot');
+const X0=-0.85,X1=0.95,Y0=-1.48,Y1=0.16,PW=640,PH=600,PADL=44,PADB=30,PADT=8,PADR=8;
+const sx=x=>PADL+(x-X0)/(X1-X0)*(PW-PADL-PADR);
+const sy=y=>PADT+(Y1-y)/(Y1-Y0)*(PH-PADT-PADB);
+function num(v,d){const r=Math.abs(v)<1e-9?0:v;return r.toFixed(d).replace('.',',').replace('-','−');}
+function path(pts){return pts.map((p,i)=>(i?'L':'M')+sx(p[0]).toFixed(1)+' '+sy(p[1]).toFixed(1)).join(' ');}
+function outer(m,parts){const N=m.n_tiers;let a=[];for(let i=1;i<N;i++)a=a.concat(parts['O'+i]);a=a.concat(parts['M']);for(let i=N-1;i>=1;i--)a=a.concat(parts['I'+i]);return a;}
+function el(tag,attrs,text){const e=document.createElementNS('http://www.w3.org/2000/svg',tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(text!=null)e.textContent=text;return e;}
+function draw(m,pred,x,truth){
+  svg.textContent='';
+  const g=el('g',{});svg.appendChild(g);
+  // сетка
+  for(let v=-1.4;v<=0.11;v+=0.2){const y=sy(v);g.appendChild(el('line',{x1:PADL,x2:PW-PADR,y1:y,y2:y,stroke:'var(--grid)','stroke-width':1}));g.appendChild(el('text',{x:PADL-6,y:y+4,'text-anchor':'end','font-size':11,fill:'var(--muted)','font-family':'var(--mono)'},num(v,1)));}
+  for(let v=-0.8;v<=0.91;v+=0.2){const xx=sx(v);g.appendChild(el('line',{x1:xx,x2:xx,y1:PADT,y2:PH-PADB,stroke:'var(--grid)','stroke-width':1}));g.appendChild(el('text',{x:xx,y:PH-PADB+16,'text-anchor':'middle','font-size':11,fill:'var(--muted)','font-family':'var(--mono)'},num(v,1)));}
+  g.appendChild(el('text',{x:PW-PADR,y:PH-4,'text-anchor':'end','font-size':11,fill:'var(--muted)'},'x, м'));
+  g.appendChild(el('text',{x:4,y:PADT+10,'font-size':11,fill:'var(--muted)'},'y, м'));
+  // корпус
+  g.appendChild(el('rect',{x:sx(0),y:sy(Y1),width:sx(X1)-sx(0),height:sy(0)-sy(Y1),fill:'var(--hull)'}));
+  g.appendChild(el('text',{x:sx(0.62),y:sy(0.06),'font-size':12,fill:'var(--ink2)','text-anchor':'middle'},'корпус'));
+  // опора
+  const N=m.n_tiers, p0=x.slice(0,N), dl=x[N+1];
+  const yg=ylow(m,p0)+dl;
+  g.appendChild(el('rect',{x:PADL,y:sy(yg),width:PW-PADL-PADR,height:Math.max(0,sy(Y0)-sy(yg)),fill:'var(--grid)'}));
+  g.appendChild(el('line',{x1:PADL,x2:PW-PADR,y1:sy(yg),y2:sy(yg),stroke:'var(--ground)','stroke-width':1.5}));
+  g.appendChild(el('text',{x:PW-PADR-4,y:sy(yg)+16,'text-anchor':'end','font-size':12,fill:'var(--ink2)'},'опорная поверхность'));
+  // стрелки бокового давления
+  for(const yy of [-0.3,-0.55,-0.8]){const xa=sx(0.86),xb=sx(0.72),ya=sy(yy);g.appendChild(el('line',{x1:xa,x2:xb+6,y1:ya,y2:ya,stroke:'var(--wall)','stroke-width':1.5}));g.appendChild(el('path',{d:`M${xb} ${ya} l8 -4 l0 8 z`,fill:'var(--wall)'}));}
+  const pcl=el('text',{x:sx(0.79),y:sy(-0.3)-8,'text-anchor':'middle','font-size':14,fill:'var(--wall)','font-style':'italic'},'p');
+  const sub=el('tspan',{'font-size':10,dy:3},'c');pcl.appendChild(sub);g.appendChild(pcl);
+  // свободная форма
+  const rp=split(m,m.ref_points);
+  g.appendChild(el('path',{d:path(outer(m,rp)),fill:'none',stroke:'var(--ref)','stroke-width':1.3,'stroke-dasharray':'5 4'}));
+  // эталон
+  if(truth){const tp=split(m,truth);g.appendChild(el('path',{d:path(outer(m,tp)),fill:'none',stroke:'var(--true)','stroke-width':1.2}));for(let i=1;i<N;i++)g.appendChild(el('path',{d:path(tp['W'+i]),fill:'none',stroke:'var(--true)','stroke-width':1.2}));}
+  // прогноз
+  const pp=split(m,pred.pts);
+  const shape=outer(m,pp);
+  g.appendChild(el('path',{d:path(shape)+' L'+sx(m.b)+' '+sy(0)+' L'+sx(0)+' '+sy(0)+' Z',fill:'var(--shell)','fill-opacity':0.08,stroke:'none'}));
+  g.appendChild(el('path',{d:path(shape),fill:'none',stroke:'var(--shell)','stroke-width':2.6,'stroke-linejoin':'round'}));
+  for(let i=1;i<N;i++)g.appendChild(el('path',{d:path(pp['W'+i]),fill:'none',stroke:'var(--wall)','stroke-width':2.2}));
+  // контакт
+  if(pred.L>0.002){const M=pp['M'];let lo=Infinity;for(const p of M)lo=Math.min(lo,p[1]);const on=M.filter(p=>p[1]<lo+0.004);if(on.length>1){const xs=on.map(p=>p[0]);const xa=Math.min(...xs),xb=Math.max(...xs);g.appendChild(el('line',{x1:sx(xa),x2:sx(xb),y1:sy(yg),y2:sy(yg),stroke:'var(--contact)','stroke-width':4.5,'stroke-linecap':'round'}));}}
+  // подписи давлений у центров ярусов
+  const cents=[];
+  for(let i=1;i<=N;i++){let poly=[];if(i<N)poly=poly.concat(pp['O'+i],pp['W'+i],pp['I'+i]);else poly=poly.concat(pp['M']);if(i>1)poly=poly.concat(pp['W'+(i-1)].slice().reverse());const cx=poly.reduce((s,p)=>s+p[0],0)/poly.length,cy=poly.reduce((s,p)=>s+p[1],0)/poly.length;cents.push([cx,cy]);}
+  cents.forEach((c,i)=>{g.appendChild(el('text',{x:sx(c[0]),y:sy(c[1])+5,'text-anchor':'middle','font-size':13,'font-family':'var(--mono)',fill:'var(--ink)'},num(pred.P[i]/1000,1)+' кПа'));});
+  // точки крепления
+  for(const [px,lab] of [[0,'A'],[m.b,'B']]){g.appendChild(el('circle',{cx:sx(px),cy:sy(0),r:3.5,fill:'var(--ink)'}));g.appendChild(el('text',{x:sx(px)+(lab==='A'?-12:6),y:sy(0)-6,'font-size':12,fill:'var(--ink2)','font-style':'italic'},lab));}
+}
+
+// ---- состояние и интерфейс ----
+const state={name:'two_tier',p0:{two_tier:[6000,6000],three_tier:[6000,6000,6000]},pc:1000,dl:0.10,caseIdx:-1};
+const $=id=>document.getElementById(id);
+function fmtP(v){return (v/1000).toFixed(2).replace('.',',')+' кПа';}
+function buildPressureSliders(){
+  const g=$('pgroup');g.querySelectorAll('.field').forEach(e=>e.remove());
+  const m=MODELS[state.name];
+  for(let i=0;i<m.n_tiers;i++){
+    const f=document.createElement('div');f.className='field';
+    f.innerHTML=`<div class="row"><label for="p${i}">Ярус ${i+1}, p<sub>0${i+1}</sub></label><output id="p${i}_o"></output></div><input type="range" id="p${i}" min="4000" max="10000" step="50" value="${state.p0[state.name][i]}">`;
+    g.appendChild(f);
+    f.querySelector('input').addEventListener('input',e=>{state.p0[state.name][i]=+e.target.value;state.caseIdx=-1;$('case').value='-1';update();});
+  }
+}
+function buildCases(){
+  const s=$('case');const m=MODELS[state.name];
+  s.innerHTML='<option value="-1">— свои параметры —</option>'+m.test_cases.map((c,i)=>{const N=m.n_tiers;return `<option value="${i}">№${i+1}: p₀ ${c.x.slice(0,N).map(v=>(v/1000).toFixed(1)).join('/')} · pc ${(c.x[N]/1000).toFixed(2)} · δ ${(c.x[N+1]*100).toFixed(0)} см</option>`;}).join('');
+  s.value=String(state.caseIdx);
+}
+function setTiers(name){state.name=name;state.caseIdx=-1;$('n2').setAttribute('aria-pressed',name==='two_tier');$('n3').setAttribute('aria-pressed',name==='three_tier');buildPressureSliders();buildCases();update();}
+function update(){
+  const m=MODELS[state.name],N=m.n_tiers;
+  let x, truth=null, tc=null;
+  if(state.caseIdx>=0){tc=m.test_cases[state.caseIdx];x=tc.x.slice();truth=[];for(let i=0;i<tc.y_true.length;i+=2)truth.push([tc.y_true[i],tc.y_true[i+1]]);
+    for(let i=0;i<N;i++){state.p0[state.name][i]=x[i];}state.pc=x[N];state.dl=x[N+1];}
+  else x=[...state.p0[state.name],state.pc,state.dl];
+  for(let i=0;i<N;i++){$('p'+i).value=x[i];$('p'+i+'_o').textContent=fmtP(x[i]);}
+  $('pc').value=x[N];$('pc_o').textContent=fmtP(x[N]);
+  $('dl').value=x[N+1];$('dl_o').textContent=(x[N+1]*100).toFixed(1).replace('.',',')+' см';
+  const t0=performance.now();let pred;const reps=20;for(let r=0;r<reps;r++)pred=predict(m,x);const dt=(performance.now()-t0)/reps;
+  draw(m,pred,x,truth);
+  $('lg_true').hidden=!truth;
+  const cells=[];
+  pred.P.forEach((p,i)=>cells.push([`Давление в ярусе ${i+1}`,(p/1000).toFixed(2).replace('.',','),'кПа',tc?(tc.p_true[i]/1000).toFixed(2).replace('.',','):null]));
+  cells.push(['Длина контакта',(pred.L*100).toFixed(1).replace('.',','),'см',tc?(tc.l_true*100).toFixed(1).replace('.',','):null]);
+  let low=Infinity;for(const p of pred.pts)low=Math.min(low,p[1]);
+  cells.push(['Нижняя точка y',(low*100).toFixed(1).replace('.',','),'см',null]);
+  if(truth){let se=0,mx=0;for(let i=0;i<truth.length;i++){const d=Math.hypot(pred.pts[i][0]-truth[i][0],pred.pts[i][1]-truth[i][1]);se+=d*d;mx=Math.max(mx,d);}
+    cells.push(['СКО формы vs решатель',(Math.sqrt(se/truth.length)*1000).toFixed(2).replace('.',','),'мм',null]);
+    cells.push(['Макс. отклонение точки',(mx*1000).toFixed(2).replace('.',','),'мм',null]);}
+  $('readout').innerHTML=cells.map(c=>`<div class="cell"><span class="k">${c[0]}</span><span class="v">${c[1]}<small>${c[2]}</small></span>${c[3]!=null?`<span class="k">решатель: ${c[3]} ${c[2]}</span>`:''}</div>`).join('');
+  $('timing').textContent=`Прогноз в браузере: ${dt.toFixed(3).replace('.',',')} мс на случай (MLP ${m.W.slice(0,-1).map(w=>w.c).join('×')}, ${m.activation}; ${m.layout.reduce((s,l)=>s+l[1],0)} материальных точек).`;
+}
+function buildTable(){
+  const order=[['linear','Линейная регрессия'],['poly3','Полиномиальная, 3-я ст.'],['knn','k ближайших соседей'],['rf','Случайный лес'],['gbm','Градиентный бустинг'],['gpr','Гауссовский процесс'],['mlp','MLP']];
+  const f=(v,d=2)=>v.toFixed(d).replace('.',',');
+  let h='<thead><tr><th>Модель</th><th>СКО, мм (2 яруса)</th><th>СКО, мм (3 яруса)</th><th>R² (3 яруса)</th><th>Ошибка давлений, %</th><th>Прогноз, мс</th></tr></thead><tbody>';
+  const best=Object.entries(METRICS.three_tier).sort((a,b)=>a[1].rmse_mm-b[1].rmse_mm)[0][0];
+  for(const [k,t] of order){const a=METRICS.two_tier[k],b=METRICS.three_tier[k];
+    h+=`<tr class="${k==='mlp'?'best':''}"><td>${t}${k==='mlp'?'<span class="badge">основная</span>':''}</td><td class="num">${f(a.rmse_mm)}</td><td class="num">${f(b.rmse_mm)}</td><td class="num">${b.r2.toFixed(5).replace('.',',')}</td><td class="num">${f(b.p_mape_pct)}</td><td class="num">${f(b.t_single_ms,3)}</td></tr>`;}
+  $('mtable').innerHTML=h+'</tbody>';
+}
+$('n2').addEventListener('click',()=>setTiers('two_tier'));
+$('n3').addEventListener('click',()=>setTiers('three_tier'));
+$('pc').addEventListener('input',e=>{state.pc=+e.target.value;state.caseIdx=-1;$('case').value='-1';update();});
+$('dl').addEventListener('input',e=>{state.dl=+e.target.value;state.caseIdx=-1;$('case').value='-1';update();});
+$('case').addEventListener('change',e=>{state.caseIdx=+e.target.value;update();});
+buildTable();setTiers('two_tier');
+</script>

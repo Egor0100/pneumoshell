@@ -1,0 +1,74 @@
+{
+ "grid": [
+  {
+   "cfg": {
+    "hidden": [
+     64,
+     64
+    ],
+    "activation": "tanh",
+    "solver": "lbfgs"
+   },
+   "val_rmse_mm": 1.356,
+   "fit_s": 8.0,
+   "n_iter": 1324
+  },
+  {
+   "cfg": {
+    "hidden": [
+     128,
+     128
+    ],
+    "activation": "tanh",
+    "solver": "lbfgs"
+   },
+   "val_rmse_mm": 1.092,
+   "fit_s": 19.0,
+   "n_iter": 1357
+  },
+  {
+   "cfg": {
+    "hidden": [
+     64,
+     64,
+     64
+    ],
+    "activation": "tanh",
+    "solver": "lbfgs"
+   },
+   "val_rmse_mm": 1.241,
+   "fit_s": 11.0,
+   "n_iter": 1201
+  },
+  {
+   "cfg": {
+    "hidden": [
+     128,
+     128,
+     128
+    ],
+    "activation": "tanh",
+    "solver": "adam",
+    "lr": 0.002
+   },
+   "val_rmse_mm": 0.899,
+   "fit_s": 39.0,
+   "n_iter": 987
+  },
+  {
+   "cfg": {
+    "hidden": [
+     256,
+     256
+    ],
+    "activation": "relu",
+    "solver": "adam",
+    "lr": 0.001
+   },
+   "val_rmse_mm": 0.541,
+   "fit_s": 77.0,
+   "n_iter": 1021
+  }
+ ],
+ "ablation": 1.512
+}
