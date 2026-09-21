@@ -1,0 +1,36 @@
+  two_tier: 250/4000  16 s
+  two_tier: 500/4000  31 s
+  two_tier: 750/4000  45 s
+  two_tier: 1000/4000  69 s
+  two_tier: 1250/4000  100 s
+  two_tier: 1500/4000  126 s
+  two_tier: 1750/4000  155 s
+  two_tier: 2000/4000  182 s
+  two_tier: 2250/4000  211 s
+  two_tier: 2500/4000  240 s
+  two_tier: 2750/4000  268 s
+  two_tier: 3000/4000  297 s
+  two_tier: 3250/4000  325 s
+  two_tier: 3500/4000  354 s
+  two_tier: 3750/4000  384 s
+  two_tier: 4000/4000  412 s
+two_tier: ok 4000/4000, wall 412 s, mean solve 0.204 s
+saved /home/claude/pneumoshell/scripts/../data/dataset_two_tier.npz (4000, 4) (4000, 268)
+  three_tier: 250/4000  64 s
+  three_tier: 500/4000  127 s
+  three_tier: 750/4000  188 s
+  three_tier: 1000/4000  241 s
+  three_tier: 1250/4000  273 s
+  three_tier: 1500/4000  303 s
+  three_tier: 1750/4000  334 s
+  three_tier: 2000/4000  365 s
+  three_tier: 2250/4000  398 s
+  three_tier: 2500/4000  428 s
+  three_tier: 2750/4000  460 s
+  three_tier: 3000/4000  492 s
+  three_tier: 3250/4000  523 s
+  three_tier: 3500/4000  555 s
+  three_tier: 3750/4000  584 s
+  three_tier: 4000/4000  613 s
+three_tier: ok 4000/4000, wall 613 s, mean solve 0.305 s
+saved /home/claude/pneumoshell/scripts/../data/dataset_three_tier.npz (4000, 5) (4000, 362)
